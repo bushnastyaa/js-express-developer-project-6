@@ -2,7 +2,7 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "[![Actions Status](https://github.com/bushnastyaa/js-express-developer-project-6/workflows/hexlet-check/badge.svg)](https://github.com/bushnastyaa/js-express-developer-project-6/actions)",
-  "main": "server/index.js",
+  "main": "server/plugin.js",
   "type": "module",
   "scripts": {
     "prebuild": "rm -rf dist",
@@ -49,6 +49,7 @@
     "@fastify/sensible": "^5.1.0",
     "@fastify/static": "^6.5.0",
     "@fastify/view": "^7.1.0",
+    "@vscode/sqlite3": "^5.1.6-vscode",
     "bootstrap": "^5.2.0",
     "dotenv": "^16.3.1",
     "fastify": "^4.10.2",
