@@ -4,7 +4,16 @@ block header
   = t('views.users.new.signUp')
 
 block content
-  +formFor()(action=route('users') method='post')
-    +input(user, 'email', errors)(type="text")
-    +input(user, 'password', errors)(type="password")
-    +submit(user)(value=t('views.users.new.submit'))
+  .row.justify-content-center
+    .col-12.col-md-8
+      .card.shadow-sm
+        .card-body.row.p-5
+          .col-12.col-md-6.d-flex.align-items-center.justify-content-center
+            p photo
+          .col-12.col-md-6.mt-3.mt-mb-0
+            +formFor()(action=route('users') method='post')
+              +input(user, t('views.users.new.name'), errors)(type="text" placeholder=t('views.users.new.name'))
+              +input(user, t('views.users.new.surname'), errors)(type="text", placeholder=t('views.users.new.surname'))
+              +input(user, t('views.users.new.email'), errors)(type="text", placeholder=t('views.users.new.email'))
+              +input(user, t('views.users.new.password'), errors)(type="password", placeholder=t('views.users.new.password'))
+              +submit(user)(value=t('views.users.new.submit'))
