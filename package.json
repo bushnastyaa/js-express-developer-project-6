@@ -7,7 +7,7 @@
   "scripts": {
     "prebuild": "rm -rf dist",
     "test": "jest",
-    "build": "webpack",
+    "build": "make db-migrate & webpack",
     "start": "fastify start server/plugin.js -l debug -P -o"
   },
   "jest": {

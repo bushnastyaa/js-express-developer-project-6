@@ -12,8 +12,8 @@ block content
             p photo
           .col-12.col-md-6.mt-3.mt-mb-0
             +formFor()(action=route('users') method='post')
-              +input(user, t('views.users.new.name'), errors)(type="text" placeholder=t('views.users.new.name'))
-              +input(user, t('views.users.new.surname'), errors)(type="text", placeholder=t('views.users.new.surname'))
+              +input(user, t('views.users.new.firstname'), errors)(type="text" placeholder=t('views.users.new.firstname'))
+              +input(user, t('views.users.new.lastname'), errors)(type="text", placeholder=t('views.users.new.lastname'))
               +input(user, t('views.users.new.email'), errors)(type="text", placeholder=t('views.users.new.email'))
               +input(user, t('views.users.new.password'), errors)(type="password", placeholder=t('views.users.new.password'))
               +submit(user)(value=t('views.users.new.submit'))
