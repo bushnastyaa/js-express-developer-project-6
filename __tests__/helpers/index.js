@@ -14,10 +14,11 @@ export const prepareData = async (app) => {
   const { knex } = app.objection;
 
   await knex('users').insert(getFixtureData('users.json'));
+  await knex('statuses').insert(getFixtureData('statuses.json'));
 };
 
 export const getCookie = async (app, testData) => {
-  const responseSignIn = await app.inject({
+  const response = await app.inject({
     method: 'POST',
     url: app.reverse('session'),
     payload: {
@@ -25,7 +26,7 @@ export const getCookie = async (app, testData) => {
     },
   });
 
-  const [sessionCookie] = responseSignIn.cookies;
+  const [sessionCookie] = response.cookies;
   const { name, value } = sessionCookie;
   return { [name]: value };
 };
