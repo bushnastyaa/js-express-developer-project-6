@@ -52,6 +52,7 @@
     "@vscode/sqlite3": "^5.1.6-vscode",
     "bootstrap": "^5.2.0",
     "dotenv": "^16.3.1",
+    "faker": "^6.6.6",
     "fastify": "^4.10.2",
     "fastify-cli": "^5.1.0",
     "fastify-error-page": "^4.0.0",
