@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fastifyStatic from '@fastify/static';
-// NOTE: не поддердивает fastify 4.x
 // import fastifyErrorPage from 'fastify-error-page';
 import fastifyView from '@fastify/view';
 import fastifyFormbody from '@fastify/formbody';
@@ -32,7 +31,6 @@ const __dirname = fileURLToPath(path.dirname(import.meta.url));
 
 dotenv.config();
 const mode = process.env.NODE_ENV || 'development';
-// const isDevelopment = mode === 'development';
 
 const setUpViews = (app) => {
   const helpers = getHelpers(app);
@@ -66,7 +64,6 @@ const setupLocalization = async () => {
     .init({
       lng: 'ru',
       fallbackLng: 'en',
-      // debug: isDevelopment,
       resources: {
         ru,
         en,
