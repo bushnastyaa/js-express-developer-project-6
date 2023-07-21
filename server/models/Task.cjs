@@ -1,11 +1,8 @@
 // @ts-check
 
-const objectionUnique = require('objection-unique');
 const BaseModel = require('./BaseModel.cjs');
 
-const unique = objectionUnique({ fields: ['name'] });
-
-module.exports = class Task extends unique(BaseModel) {
+module.exports = class Task extends BaseModel {
   static get tableName() {
     return 'tasks';
   }
