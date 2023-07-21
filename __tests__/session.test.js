@@ -10,10 +10,7 @@ describe('test session', () => {
   let testData;
 
   beforeAll(async () => {
-    app = fastify({
-      exposeHeadRoutes: false,
-      logger: { target: 'pino-pretty' },
-    });
+    app = fastify();
     await init(app);
     knex = app.objection.knex;
     await knex.migrate.latest();
