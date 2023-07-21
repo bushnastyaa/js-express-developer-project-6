@@ -59,7 +59,7 @@ describe('test statuses CRUD', () => {
     });
 
     expect(response.statusCode).toBe(302);
-    const newStatus = await models.status.query().findOne({ email: params.name });
+    const newStatus = await models.status.query().findOne({ name: params.name });
     expect(newStatus).toMatchObject(params);
   });
 
@@ -89,6 +89,24 @@ describe('test statuses CRUD', () => {
     expect(response.statusCode).toBe(302);
     const deletedStatus = await models.status.query().findById(status.id);
     expect(deletedStatus).toBeUndefined();
+  });
+
+  it('delete status linked with task', async () => {
+    await models.task.query().insert({
+      ...testData.tasks.existing,
+      statusId: status.id,
+    });
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: app.reverse('deleteStatus', { id: status.id }),
+      cookies,
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const undeletedStatus = await models.status.query().findById(status.id);
+    expect(undeletedStatus).not.toBeUndefined();
   });
 
   afterEach(async () => {

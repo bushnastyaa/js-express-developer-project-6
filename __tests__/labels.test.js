@@ -82,13 +82,29 @@ describe('test labels CRUD', () => {
   it('delete', async () => {
     const response = await app.inject({
       method: 'DELETE',
-      cookies,
       url: app.reverse('deleteLabel', { id: label.id }),
+      cookies,
     });
 
     expect(response.statusCode).toBe(302);
     const deletedLabel = await models.label.query().findById(label.id);
     expect(deletedLabel).toBeUndefined();
+  });
+
+  it('delete label linked with task', async () => {
+    const task = await models.task.query().insert(testData.tasks.existing);
+    await task.$relatedQuery('labels').relate(label);
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: app.reverse('deleteLabel', { id: label.id }),
+      cookies,
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const undeletedLabel = await models.label.query().findById(label.id);
+    expect(undeletedLabel).not.toBeUndefined();
   });
 
   afterEach(async () => {

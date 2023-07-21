@@ -26,7 +26,7 @@ describe('test users CRUD', () => {
     await knex.migrate.latest();
     await prepareData(app);
     user = await models.user.query().findOne({ email: testData.users.existing.email });
-    cookies = await getCookie(app);
+    cookies = await getCookie(app, testData.users.existing);
   });
 
   it('index', async () => {
@@ -42,6 +42,7 @@ describe('test users CRUD', () => {
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('newUser'),
+      cookies,
     });
 
     expect(response.statusCode).toBe(200);
@@ -89,27 +90,29 @@ describe('test users CRUD', () => {
   it('delete', async () => {
     const response = await app.inject({
       method: 'DELETE',
-      cookies,
       url: app.reverse('deleteUser', { id: user.id }),
+      cookies,
     });
 
     expect(response.statusCode).toBe(302);
   });
 
-  it('create user with the same email', async () => {
-    const params = testData.users.new;
-
-    const response = await app.inject({
-      method: 'POST',
-      url: app.reverse('users'),
-      payload: {
-        data: { ...params, email: user.email },
-      },
+  it('delete user with tasks', async () => {
+    await models.task.query().insert({
+      ...testData.tasks.new,
+      creatorId: user.id,
     });
 
-    expect(response.statusCode).toBe(200);
-    const newUser = await models.user.query().findOne({ email: params.email });
-    expect(newUser).toBeUndefined();
+    const response = await app.inject({
+      method: 'DELETE',
+      url: app.reverse('deleteUser', { id: user.id }),
+      cookies,
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const undeletedUser = await models.user.query().findById(user.id);
+    expect(undeletedUser).not.toBeUndefined();
   });
 
   afterEach(async () => {

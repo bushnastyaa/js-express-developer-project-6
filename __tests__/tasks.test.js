@@ -69,7 +69,7 @@ describe('test tasks CRUD', () => {
     });
 
     expect(response.statusCode).toBe(302);
-    const newTask = await models.tasks.query().findOne({ name: params.name });
+    const newTask = await models.task.query().findOne({ name: params.name });
     expect(newTask).toMatchObject(params);
   });
 
