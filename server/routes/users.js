@@ -6,20 +6,13 @@ export default (app) => {
   app
     .get('/users', { name: 'users' }, async (_req, reply) => {
       const users = await app.objection.models.user.query();
-      reply.render('users/index', { users });
-      return reply;
+      return reply.render('users/index', { users });
     })
     .get('/users/new', { name: 'newUser' }, (_req, reply) => {
       const user = new app.objection.models.user();
-      reply.render('users/new', { user });
+      return reply.render('users/new', { user });
     })
-    .get('/users/:id/edit', { name: 'editUser' }, async (req, reply) => {
-      if (!req.isAuthenticated()) {
-        req.flash('error', i18next.t('flash.authError'));
-        reply.redirect(app.reverse('users'));
-        return reply;
-      }
-
+    .get('/users/:id/edit', { name: 'editUser', preValidation: app.authenticate }, async (req, reply) => {
       const { id } = req.params;
       const userId = req.user.id;
 
@@ -31,12 +24,11 @@ export default (app) => {
 
       try {
         const user = await app.objection.models.user.query().findById(id);
-        reply.render('users/edit', { user });
+        return reply.render('users/edit', { user });
       } catch (err) {
         req.flash('error', i18next.t('flash.users.update.notFound'));
-        reply.redirect(app.reverse('users'));
+        return reply.redirect(app.reverse('users'));
       }
-      return reply;
     })
     .post('/users', async (req, reply) => {
       try {
@@ -49,13 +41,7 @@ export default (app) => {
         return reply.render('users/new', { user: req.body.data, errors: data });
       }
     })
-    .patch('/users/:id', { name: 'editedUser' }, async (req, reply) => {
-      if (!req.isAuthenticated()) {
-        req.flash('error', i18next.t('flash.authError'));
-        reply.redirect(app.reverse('users'));
-        return reply;
-      }
-
+    .patch('/users/:id', { preValidation: app.authenticate }, async (req, reply) => {
       const { id } = req.params;
       const userId = req.user.id;
 
@@ -70,37 +56,34 @@ export default (app) => {
         const currentUser = await app.objection.models.user.query().findById(id);
         await currentUser.$query().update(user);
         req.flash('info', i18next.t('flash.users.update.success'));
-        reply.redirect(app.reverse('users'));
+        return reply.redirect(app.reverse('users'));
       } catch ({ data }) {
         req.flash('error', i18next.t('flash.users.update.error'));
-        reply.render('users/edit', { user: req.body.data, errors: data });
+        return reply.render('users/edit', { user: req.body.data, errors: data });
       }
-      return reply;
     })
-    .delete('/users/:id', { name: 'deleteUser' }, async (req, reply) => {
-      if (!req.isAuthenticated()) {
-        req.flash('error', i18next.t('flash.authError'));
-        reply.redirect(app.reverse('users'));
-        return reply;
-      }
-
+    .delete('/users/:id', { name: 'deleteUser', preValidation: app.authenticate }, async (req, reply) => {
       const { id } = req.params;
       const userId = req.user.id;
 
       if (Number(id) !== Number(userId)) {
-        req.flash('error', i18next.t('flash.users.update.notAllowed'));
+        req.flash('error', i18next.t('flash.users.delete.notAllowed'));
         reply.redirect(app.reverse('users'));
         return reply;
       }
 
-      try {
+      const tasks = await app.objection.models.task
+        .query()
+        .where('executorId', req.params.id)
+        .orWhere('creatorId', req.params.id);
+
+      if (!tasks.length) {
         await app.objection.models.user.query().deleteById(id);
         req.logOut();
         req.flash('info', i18next.t('flash.users.delete.success'));
-      } catch (err) {
-        req.flash('error', i18next.t('flash.users.update.notFound'));
+      } else {
+        req.flash('error', i18next.t('flash.users.delete.error'));
       }
-      reply.redirect(app.reverse('users'));
-      return reply;
+      return reply.redirect(app.reverse('users'));
     });
 };
