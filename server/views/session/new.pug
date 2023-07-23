@@ -9,7 +9,7 @@ block content
       .card.shadow-sm
         .card-body.row.p-5
           .col-12.col-md-6.d-flex.align-items-center.justify-content-center
-            p photo
+            img(src='../assets/avatar.jpg' alt='avatar')
           .col-12.col-md-6.mt-3.mt-mb-0
             +formFor()(action=route('session') method='post')
               +input(signInForm, t('views.session.new.email'), errors)(type="text", placeholder=t('views.session.new.email'))
