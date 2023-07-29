@@ -4,13 +4,11 @@ block header
   = t('views.users.new.signUp')
 
 block content
-  .row.justify-content-center
+  .row.justify-content-center.mt-4
     .col-12.col-md-8
       .card.shadow-sm
         .card-body.row.p-5
-          .col-12.col-md-6.d-flex.align-items-center.justify-content-center
-            img(src='../../assets/avatar.jpg' alt='avatar')
-          .col-12.col-md-6.mt-3.mt-mb-0
+          .mt-3.mt-mb-0
             +formFor()(action=route('users') method='post')
               +input(user, t('views.users.new.firstname'), errors)(type="text" placeholder=t('views.users.new.firstname'))
               +input(user, t('views.users.new.lastname'), errors)(type="text", placeholder=t('views.users.new.lastname'))
