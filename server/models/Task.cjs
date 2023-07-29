@@ -1,8 +1,14 @@
 // @ts-check
+const path = require('node:path');
 
+const objectionUnique = require('objection-unique');
 const BaseModel = require('./BaseModel.cjs');
+const Status = require('./Status.cjs');
+const Label = require('./Label.cjs');
 
-module.exports = class Task extends BaseModel {
+const unique = objectionUnique({ fields: ['email'] });
+
+module.exports = class Task extends unique(BaseModel) {
   static get tableName() {
     return 'tasks';
   }
@@ -23,29 +29,27 @@ module.exports = class Task extends BaseModel {
     };
   }
 
-  static get relationMappings() {
+  static relationMappings() {
     return {
       status: {
-        relation: BaseModel.HasManyRelation,
-        modelClass: 'Status',
+        relation: BaseModel.HasOneRelation,
+        modelClass: Status,
         join: {
-          from: 'tasks.statusId',
+          from: 'tasks.status_id',
           to: 'statuses.id',
         },
       },
-
       creator: {
-        relation: BaseModel.HasManyRelation,
-        modelClass: 'User',
+        relation: BaseModel.HasOneRelation,
+        modelClass: path.join(__dirname, 'User.cjs'),
         join: {
           from: 'tasks.creatorId',
           to: 'users.id',
         },
       },
-
       executor: {
-        relation: BaseModel.HasManyRelation,
-        modelClass: 'User',
+        relation: BaseModel.HasOneRelation,
+        modelClass: path.join(__dirname, 'User.cjs'),
         join: {
           from: 'tasks.executorId',
           to: 'users.id',
@@ -53,7 +57,7 @@ module.exports = class Task extends BaseModel {
       },
       labels: {
         relation: BaseModel.ManyToManyRelation,
-        modelClass: 'Label',
+        modelClass: Label,
         join: {
           from: 'tasks.id',
           through: {
