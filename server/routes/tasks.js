@@ -23,9 +23,10 @@ export default (app) => {
           .where('labelId', label),
       ]);
 
-      return reply.render('tasks/index', {
+      reply.render('tasks/index', {
         executors, tasks, statuses, labels, values: req.query,
       });
+      return reply;
     })
     .get('/tasks/new', { name: 'newTask', preValidation: app.authenticate }, async (_req, reply) => {
       const [task, users, statuses, labels] = await Promise.all([
@@ -35,16 +36,18 @@ export default (app) => {
         app.objection.models.label.query(),
       ]);
 
-      return reply.render('tasks/new', {
+      reply.render('tasks/new', {
         task, users, statuses, labels,
       });
+      return reply;
     })
     .get('/tasks/:id', { name: 'taskView', preValidation: app.authenticate }, async (req, reply) => {
       const task = await app.objection.models.task
         .query()
         .findById(req.params.id)
         .withGraphFetched('[status, creator, executor, labels]');
-      return reply.render('tasks/view', { task });
+      reply.render('tasks/view', { task });
+      return reply;
     })
     .get('/tasks/:id/edit', { name: 'editTask', preValidation: app.authenticate }, async (req, reply) => {
       const [task, users, statuses, labels] = await Promise.all([
@@ -57,9 +60,10 @@ export default (app) => {
         app.objection.models.label.query(),
       ]);
 
-      return reply.render('tasks/edit', {
+      reply.render('tasks/edit', {
         task, users, statuses, labels,
       });
+      return reply;
     })
     .post('/tasks', { preValidation: app.authenticate }, async (req, reply) => {
       try {
@@ -70,13 +74,13 @@ export default (app) => {
         }, { relate: true });
 
         req.flash('success', i18next.t('flash.tasks.create.success'));
-        return reply.redirect(app.reverse('tasks'));
+        reply.redirect(app.reverse('tasks'));
       } catch ({ data }) {
         req.flash('error', i18next.t('flash.tasks.create.error'));
         const users = await app.objection.models.user.query();
         const statuses = await app.objection.models.status.query();
         const labels = await app.objection.models.label.query();
-        return reply.render('/tasks/new', {
+        reply.render('/tasks/new', {
           task: req.body.data,
           errors: data,
           users,
@@ -84,27 +88,37 @@ export default (app) => {
           labels,
         });
       }
+      return reply;
     })
     .patch('/tasks/:id', { name: 'patchTask', preValidation: app.authenticate }, async (req, reply) => {
       try {
         const { creatorId } = await app.objection.models.task.query().findById(req.params.id);
         const id = Number(req.params.id);
+        const executorId = req.body.data.executorId || undefined;
+        const labelsId = [...req.body.data.labels]
+          .flat().map((label) => ({ id: Number(label) }));
 
         await app.objection.models.task.transaction((trx) => (
           app.objection.models.task.query(trx).upsertGraph(
-            { id, ...req.body.data, creatorId },
+            {
+              id,
+              ...req.body.data,
+              creatorId,
+              executorId,
+              labels: labelsId,
+            },
             { relate: true, unrelate: true, noUpdate: ['labels'] },
           )
         ));
 
         req.flash('success', i18next.t('flash.tasks.update.success'));
-        return reply.redirect(app.reverse('tasks'));
+        reply.redirect(app.reverse('tasks'));
       } catch ({ data }) {
         req.flash('error', i18next.t('flash.tasks.update.error'));
         const users = await app.objection.models.user.query();
         const statuses = await app.objection.models.status.query();
         const labels = await app.objection.models.label.query();
-        return reply.render('/tasks/edit', {
+        reply.render('/tasks/edit', {
           task: req.body.data,
           errors: data,
           users,
@@ -112,6 +126,7 @@ export default (app) => {
           labels,
         });
       }
+      return reply;
     })
     .delete('/tasks/:id', { name: 'deleteTask', preValidation: app.authenticate }, async (req, reply) => {
       const { id } = req.params;

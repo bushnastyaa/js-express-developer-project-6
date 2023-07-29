@@ -6,26 +6,30 @@ export default (app) => {
   app
     .get('/labels', { name: 'labels' }, async (_req, reply) => {
       const labels = await app.objection.models.label.query();
-      return reply.render('labels/index', { labels });
+      reply.render('labels/index', { labels });
+      return reply;
     })
     .get('/labels/new', { name: 'newLabel', preValidation: app.authenticate }, (_req, reply) => {
       const label = new app.objection.models.label();
-      return reply.render('labels/new', { label });
+      reply.render('labels/new', { label });
+      return reply;
     })
     .get('/labels/:id/edit', { name: 'editLabel', preValidation: app.authenticate }, async (req, reply) => {
       const label = await app.objection.models.label.query().findById(req.params.id);
-      return reply.render('labels/edit', { label });
+      reply.render('labels/edit', { label });
+      return reply;
     })
     .post('/labels', { preValidation: app.authenticate }, async (req, reply) => {
       try {
         const validLabel = await app.objection.models.label.fromJson(req.body.data);
         await app.objection.models.label.query().insert(validLabel);
         req.flash('info', i18next.t('flash.labels.create.success'));
-        return reply.redirect(app.reverse('labels'));
+        reply.redirect(app.reverse('labels'));
       } catch ({ data }) {
         req.flash('error', i18next.t('flash.labels.create.error'));
-        return reply.render('labels/new', { status: req.body.data, errors: data });
+        reply.render('labels/new', { status: req.body.data, errors: data });
       }
+      return reply;
     })
     .patch('/labels/:id', { preValidation: app.authenticate }, async (req, reply) => {
       try {
@@ -33,11 +37,12 @@ export default (app) => {
         const currentLabel = await app.objection.models.label.query().findById(req.params.id);
         await currentLabel.$query().update(label);
         req.flash('info', i18next.t('flash.labels.update.success'));
-        return reply.redirect(app.reverse('labels'));
+        reply.redirect(app.reverse('labels'));
       } catch ({ data }) {
         req.flash('error', i18next.t('flash.labels.update.error'));
-        return reply.render('labels/edit', { status: req.body.data, errors: data });
+        reply.render('labels/edit', { status: req.body.data, errors: data });
       }
+      return reply;
     })
     .delete('/labels/:id', { name: 'deleteLabel', preValidation: app.authenticate }, async (req, reply) => {
       const tasks = await app.objection.models.label.relatedQuery('tasks').for(req.params.id);
