@@ -2,9 +2,9 @@ extends ../layouts/application.pug
 
 block header
   = t('views.tasks.tasks')
-  a.btn.btn-primary.mb-5(href=route('newTask'))= t('views.tasks.create')
 
 block content
+  a.btn.btn-primary.mb-5(href=route('newTask'))= t('views.tasks.create')
   .card.shadow-sm
     .card-body.p-4
       form()(action='/tasks' method='get')
@@ -16,10 +16,10 @@ block content
         .mb-3.form-check
           if values.creator 
             input#data_isCreatorUser.form-check-input(type='checkbox' name='isCreatorUser' checked)
-            label.form-check-label(for='data_isCreatorUser')= t('layouts.tasks.own')
+            label.form-check-label(for='data_isCreatorUser')= t('views.tasks.own')
           else
             input#data_isCreatorUser.form-check-input(type='checkbox' name='isCreatorUser')
-            label.form-check-label(for='data_isCreatorUser')= t('layouts.tasks.own')
+            label.form-check-label(for='data_isCreatorUser')= t('views.tasks.own')
         +submit()(value=t('views.tasks.show')).ml-3
 
   .table-responsive
