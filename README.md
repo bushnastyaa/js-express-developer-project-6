@@ -5,9 +5,8 @@
 
 Task Manager is a task management system like http://www.redmine.org/. Allows you to set and edit tasks, statuses and labels, as well as assign executors. Registration and authentication are required to work with the system.
 
-![Task Manager](screenshots/hello.png)
-![Tasks' statutes](screenshots/statuses.png)
 ![Tasks](screenshots/tasks.png)
+![Tasks' statutes](screenshots/statuses.png)
 
 ## Installation
 
